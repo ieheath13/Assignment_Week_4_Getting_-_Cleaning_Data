@@ -15,6 +15,16 @@ test_measures <- read.table("/Users/ianheath/Desktop/UCI HAR Dataset/test/x_test
 test_subject <- read.table("/Users/ianheath/Desktop/UCI HAR Dataset/test/subject_test.txt", sep = "", col.names = "subject")
 test_df <- cbind(test_subject, test_activity, test_measures)
 
-#created combined training & test dataframe
-
+#created combined training & test dataframe containing only means and standard deviations
 combined_run_data <- rbind(training_df, test_df)
+mean_std_columns <- grep('(mean|std)', names(combined_run_data))
+mean_std_columns <- gsub(" ", "", mean_std_columns)
+mean_std_columns <- as.numeric(mean_std_columns)
+combined_run_data <- combined_run_data[ ,mean_std_columns]
+
+#create vector of activity names for recoding activity column
+activity_labels <- read.table("/Users/ianheath/Desktop/UCI HAR Dataset/activity_labels.txt", sep = " ")
+activity_labels <- activity_labels[,-1]
+# set activity column to be a factor
+combined_run_data$activity <- as.factor(combined_run_data$activity)
+levels(combined_run_data$activity) <- activity_labels
