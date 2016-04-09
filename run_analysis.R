@@ -21,10 +21,21 @@ mean_std_columns <- grep('(mean|std)', names(combined_run_data))
 mean_std_columns <- gsub(" ", "", mean_std_columns)
 mean_std_columns <- as.numeric(mean_std_columns)
 combined_run_data <- combined_run_data[ ,mean_std_columns]
-
+names(combined_run_data) <- gsub("[...]","", names(combined_run_data))
+names(combined_run_data) <- gsub("Acc", "Acceleration", names(combined_run_data))
+names(combined_run_data) <- gsub("mean", "Mean", names(combined_run_data))
+names(combined_run_data) <- gsub("std", "Std", names(combined_run_data))
 #create vector of activity names for recoding activity column
 activity_labels <- read.table("/Users/ianheath/Desktop/UCI HAR Dataset/activity_labels.txt", sep = " ")
 activity_labels <- activity_labels[,-1]
 # set activity column to be a factor
 combined_run_data$activity <- as.factor(combined_run_data$activity)
 levels(combined_run_data$activity) <- activity_labels
+
+#create a new tidy data set of combined data
+averaged_run_data <- sapply(combined_run_data, mean)
+averaged_run_data <- as.data.frame(averaged_run_data)
+names(averaged_run_data)[1] <- "mean"
+averaged_run_data$featurename <- row.names(averaged_run_data)
+averaged_run_data <- averaged_run_data[, c(2,1)]
+row.names(averaged_run_data) <- 1:79
